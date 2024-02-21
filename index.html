@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang='ja'>
+<head>
+    <meta charset='utf-8'>
+    <title>Hacayler</title>
+    <script>const version='240220a';</script>
+    <meta name='description'content='WaveEditor'>
+    <script src='fileUtil.js'></script>
+    <script src='nhl.js'></script>
+    <script src='nhlEditor.js'></script>
+    <link id='fav'rel='icon'type='image/svg+xml'>
+</head>
+<body>
+<div id='left'onchange='setValue()'>
+    <h2 id='hcl'>ハケイラー</h2>
+    波形エディタです<br>ちょっとした波形が作れます
+    <h3>-波形の設定-</h3>
+    名前 <input type='text'id='hname'placeholder='半角 8文字まで'style='width:8em;'><br>
+    タイプ <select id='htype'onchange='prtType()'><option value='0'selected>波形メモリ</option><option value='1'>座標指定</option><option value='2'>矩形波</option></select><br>
+    数値表示 <select id='hhex'><option value='0'selected>10進数</option><option value='1'>16進数</option></select>
+    <input type='button'class='btn'value='プレビュー'id='prev'onclick='preview()'>
+    <h3>-プロジェクトデータ-</h3>
+    <input type='button'class='btn'value='NHL読込'onclick='filein("nhl")'>
+    <input type='button'class='btn'value='NHL保存'onclick='exNhl()'>
+    <h3>-ついでの機能-</h3>
+    <input type='button'class='btn'value='比較用データ読込'onclick='toFile(1)'>
+    <input type='button'class='btn'value='WAV出力'onclick='wavModal()'>
+</div>
+<div id='right'>
+    <div id='upper'></div>
+    <div id='main'>
+        <div id='nhlEdt'></div>
+        <textarea style='width:760px;height:5em;'id='tval'></textarea>
+    </div>
+</div>
+<div id='wMDL'></div>
+
+</body>
+<script>
+hcl.title='ver'+version;
+nhlEditor();wavModal();
+function setValue(){//各値の取得
+    nhl=setNhl(nhl,hname.value,htype.value,hB.value,hC.value,hD.value);
+    tval.value=hhex.value==0?nhl.wave.join():'';
+    if(hhex.value==1){nhl.wave.forEach(v=>{tval.value+=n2h(v,1).toUpperCase();});}
+    backValue();
+    //波形の表示
+    prtWave(nhl,0);
+}
+function backValue(){//値を戻す
+    hname.value=nhl.name;
+    htype.value=nhl.type;
+    hB.value=nhl.dataB;
+    hC.value=nhl.dataC;
+    hD.value=nhl.dataD;
+}
+function prtType(){//波形タイプごとの表示切替
+    let B,C,D;
+    if(htype.value==0){
+        B="補間形式 <select id='hB'><option value='0'selected>なし</option><option value='1'>線形補間</option></select>";
+        C="サンプル数 <input type='number'class='num'value='5'id='hC'>";
+        D="量子化ビット数 <input type='number'class='num'value='4'id='hD'>";
+    }else if(htype.value==1){
+        B="仕様 <select id='hB'><option value='0'selected>Hacayler</option><option value='1'>ptVoice</option></select>";
+        C="座標数 <input type='number'class='num'id='hC'value='2'>";
+        D="未使用 <input type='number'id='hD'>";
+    }else if(htype.value==2){
+        B="DutyH <input type='number'id='hB'value='1'>";
+        C="Duty周期 <input type='number'id='hC'value='2'>";
+        D="未使用 <input type='number'id='hD'>";
+    }
+    upper.innerHTML=B+C+D;
+}
+initNhl();
+prtType();
+backValue();
+setValue();
+function toFile(c){//ファイル読込処理分け
+    opt=c;filein('nhl');
+}
+function exNhl(){//NHL出力
+    fileout(nhl.name+".nhl",makeNhl(nhl));
+}
+function receive(dv){//データ受取 (fileUtil用)
+    nhl=getNhl(dv);
+    hname.value=nhl.name;
+    htype.value=nhl.type;
+    prtType();
+    hB.value=nhl.dataB;
+    hC.value=nhl.dataC;
+    hD.value=nhl.dataD;
+    len=Math.pow(2,nhl.dataC);
+    qbr=Math.pow(2,nhl.dataD);
+    tval.value=hhex.value==0?nhl.wave.join():'';
+    if(hhex.value==1){nhl.wave.forEach(v=>{tval.value+=v.toString(16).toUpperCase();});}
+    setValue();
+}
+const SVG='data:image/svg+xml;charset=utf8,'+
+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#141E32"><path d="M3 4v17h6v-12h6v12h6v-16a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2M4.5 16.5h3v3h-3v-3M16.5 16.5h3v3h-3v-3"/><style>@media(prefers-color-scheme:dark){path{fill:#BBB;}}</style></svg>');
+fav.href=SVG;
+var aud=document.createElement('audio');
+aud.addEventListener('ended',()=>{prev.value='プレビュー';},false);
+function preview(){//プレビュー
+    if(!aud.paused){aud.pause();prev.value='プレビュー';return;}
+    wav.ch=0;wav.bps=8;wav.rate=44100;wav.vol=50;wav.sec=10;wav.tail=0;wav.key=60;
+    aud.src=nhl2wav(nhl);aud.play();prev.value='ストップ';
+}
+</script>
+<style>
+body{
+    font-size:1vw;
+    font-weight:bold;
+    color:#555;
+    background-color:#EEE;
+    width:100vw;height:100vh;
+    padding:0;margin:0;display:flex;
+    overflow:hidden;user-select:none;
+}
+#left{
+    padding:2em;
+    width:20em;height:calc(100vh - 4em);
+    text-align:center;
+    background-color:#DDD;
+}
+#right{
+    width:calc(100% - 8em);
+}
+#upper{
+    padding:2em 3em;
+}
+#main{
+    padding:0 3em;
+    width:calc(100% -4em);
+}
+input,select,textarea{
+    font-size:1vw;
+    border:none;resize:none;
+    border-radius:0.5em;
+    font-weight:bold;
+    color:#555;
+    background-color:#FFF;
+    margin:0.25em;padding:0.25em 0.5em;
+}
+.btn{width:65%;padding:0.15em 0.5em;}
+.btn:hover{background-color:#AAA;}
+input[type='number']{width:4em;}
+h3{margin:0.4em 0;}
+</style>
+</html>
