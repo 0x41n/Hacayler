@@ -1,0 +1,109 @@
+.shobo{
+    color:#C8D2C3;
+    background-color:#4B5550;
+    user-select:none;
+    font-size:14px;
+    padding:2em;
+}
+.shobo input, .shobo textarea{
+    color:#38F8AC;
+    font-weight:bold;
+    margin:2px;
+    padding:0.25em;
+    background-color:#283223;
+    border:solid 2px;
+    border-top-color:#14230F;
+    border-left-color:#14230F;
+    border-right-color:#646E64;
+    border-bottom-color:#646E64;
+    resize:none;
+}
+.shobo input[type="number"]::-webkit-inner-spin-button,
+.shobo input[type="number"]::-webkit-outer-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+}
+.shobo input[type="number"]{
+    text-align:center;
+    -moz-appearance:textfield;
+}
+.shobo input[type="button"]{
+    color:#C8D2C3;
+    background-color:#4B5550;
+    border-top-color:#7D877D;
+    border-left-color:#7D877D;
+    border-right-color:#283223;
+    border-bottom-color:#283223;
+}
+.shobo input[type="button"]:hover{
+    color:#F0FAEB;
+    background-color:#646E64;
+    border-top-color:#96A096;
+    border-left-color:#96A096;
+    border-right-color:#4B5550;
+    border-bottom-color:#4B5550;
+}
+.shobo input[type="button"]:active{
+    color:#96A096;
+    background-color:#4B5550;
+    border-top-color:#283223;
+    border-left-color:#283223;
+    border-right-color:#7D877D;
+    border-bottom-color:#7D877D;
+}
+.shobo input[type="button"]:focus{
+    outline:none;
+}
+.shobo input::placeholder,.shobo textarea::placeholder{
+    color:#007840;
+}
+.shobo input:focus,.shobo textarea:focus{
+    outline:solid 0.1em #38F8AC;
+}
+.shobo input[type="number"]{
+    width:3em;
+}
+.shobo select{
+    color:#283223;
+    font-weight:bold;
+    background-color:#96A096;
+    border:solid 2px #283223;
+    margin:2px;
+    padding:0.25em;
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+}
+.shobo select:focus{
+    outline:none;
+    font-weight:bold;
+}
+.shobo option{
+    font-weight:bold;
+}
+.shobo select option:checked{
+    background-color:#7D877D;
+}
+.shobo div{
+    padding:0.5em;
+    border:solid 2px;
+    background-color:#4B5550;
+    border-top-color:#646E64;
+    border-left-color:#646E64;
+    border-right-color:#14230F;
+    border-bottom-color:#14230F;
+}
+.shobo #nhlEdt{
+    position:relative;
+    background-color:#247D53;
+    border-top-color:#14230F;
+    border-left-color:#14230F;
+    border-right-color:#646E64;
+    border-bottom-color:#646E64;
+}
+.shobo #r{
+    float:right;
+}
+.shobo #fl{
+    display:flex;
+}
