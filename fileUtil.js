@@ -17,11 +17,18 @@ function n2sh(n,bytes){//数値→LHex(符号付)
     n=n<0?max*2+n:n>max-1?max-1:n;
     return n2h(n,bytes);
 }
-function s2bf(s){//Hexをまとめてバッファ化
+function s2bf(s){//Hex→buffer
     var bf=new ArrayBuffer(Math.floor(s.length/2));
     var vw=new DataView(bf);
     s.match(/.{2}/g).forEach((t,i)=>{vw.setUint8(i,parseInt(t,16));});
     return bf;
+}
+function bf2s(dv,off,l){//buffer→Hex
+    var rtn="";
+    for(let i=0;i<l;i++){
+        rtn+=("0"+dv.getUint8(off+i).toString(16)).slice(-2);
+    }
+    return rtn;
 }
 function filein(ext){//ファイル読込
     var p=document.createElement('input');

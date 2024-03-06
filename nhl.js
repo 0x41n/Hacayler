@@ -1,15 +1,16 @@
 //ハケイラー用基本処理 (fileUtil.js必須)
 var nhl={wave:[],name:'',type:0,dataB:0,dataC:0,dataD:0,len:0,qbr:0};
 function makeNhl(o){//ファイル生成
-    var data="926E686C";
-    var str=(o.name+"\0\0\0\0\0\0\0\0").slice(0,8);
+    let data="926E686C";o.dataB+=packor(o)*8;
+    let str=(o.name+"\0\0\0\0\0\0\0\0").slice(0,8);
     data+=s2h(str)+o.type.toString(16)+o.dataB.toString(16);
     if(o.type==0){data+=o.dataC.toString(16)+o.dataD.toString(16);}
     else if(o.type==1){data+=n2h(o.dataC-1,1);o.wave.shift();}
     else if(o.type==2){data+=n2h(o.dataC-1,1);o.wave=[];}
     else{data+=n2h(o.dataC,1);o.wave=[];}
-    o.wave.flat(Infinity).forEach(n=>{data+=o.dataD>4||o.type==1?n2h(n,1):n.toString(16);});
-    var blob=new Blob([s2bf(data)]);
+    if(o.dataB>7){data+=pack(o.wave,o.dataD);}
+    else{o.wave.flat(Infinity).forEach(n=>{data+=o.dataD>4||o.type==1?n2h(n,1):n.toString(16);});}
+    let blob=new Blob([s2bf(data)]);
     return window.URL.createObjectURL(blob);
 }
 function getNhl(dv){//データ読取
@@ -28,9 +29,14 @@ function getNhl(dv){//データ読取
         q.len=Math.pow(2,q.dataC);
         q.qbr=Math.pow(2,q.dataD);
         q.wave=Array(q.len);
-        for(let i=0;i<q.len;i++){
-            q.wave[i]=q.dataD>4?dv.getUint8(i+14):i%2==0?parseInt(dv.getUint8(parseInt(i/2)+14)/16):parseInt(dv.getUint8(parseInt(i/2)+14)%16);
+        if(q.dataB>7){
+            q.wave=unpack(bf2s(dv,14,packlen(q.len,q.dataD)),q.dataD,q.len);
+        }else{
+            for(let i=0;i<q.len;i++){
+                q.wave[i]=q.dataD>4?dv.getUint8(i+14):i%2==0?parseInt(dv.getUint8(parseInt(i/2)+14)/16):parseInt(dv.getUint8(parseInt(i/2)+14)%16);
+            }
         }
+        q.dataB%=8;
     }else if(q.type==1){
         q.dataC=dv.getUint8(13)+1;
         q.dataD=0;
@@ -231,4 +237,38 @@ function interp(now){//補間
 }
 function n2f(n){//キーを周波数に変換
     return 440*Math.pow(2,(n-69)/12);
+}
+/////////////////////////////
+//8ビット何個分、何サンプル入るか(量子化ビット数はインデックス)
+const qTbl=[[0,0],[1,4],[1,2],[3,4],[1,1],[5,4],[3,2],[7,4],[2,1]];
+function pack(wv,q){//ビット押込
+    let arr=[];qp=Math.pow(2,q);
+    for(let i=0;i<wv.length;i+=qTbl[q][1]){
+        let sum=0;
+        for(let j=0;j<qTbl[q][1];j++){
+            sum+=wv[i+j]===undefined?0:wv[i+j]*Math.pow(qp,j);
+        }
+        arr.push(("00000000"+sum.toString(16)).slice(qTbl[q][0]*-1));
+    }
+    return arr.join("");
+}
+function unpack(hex,q,l){//展開？
+    let arr=[],r=`.{${qTbl[q][0].toString()}}`;
+    qp=Math.pow(2,q);r=new RegExp(r,'g');hex=hex.match(r);
+    hex.forEach(t=>{
+        let num=parseInt(t,16);
+        for(let i=0;i<qTbl[q][1];i++){
+            arr.push(num%qp);
+            num=parseInt(num/qp);
+        }
+    });
+    return arr.slice(0,l);
+}
+function packor(o){//比較検証
+    if(o.type!=0){return 0}
+    let p=packlen(o.wave.length,o.dataD),n=o.dataD>4?o.len:o.len/2;
+    return p<n?1:0;
+}
+function packlen(l,q){//長さ計算(バイト)
+    return parseInt(Math.ceil(l/qTbl[q][1])*qTbl[q][0])/2;
 }
