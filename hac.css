@@ -1,0 +1,45 @@
+:root{
+--c0:#dcdcd2;
+--c1:#c6c7bf;
+--c2:#b1b2ad;
+--c3:#9c9e9b;
+--c4:#878988;
+--c5:#727576;
+--c6:#5d6064;
+--c7:#484c51;
+--c8:#33373f;
+--c9:#1e232d;
+}
+body,input,select{
+    user-select:none;
+    font-size:small;
+    color:var(--c9);
+}
+body{
+    background:var(--c3);
+    padding:2em;
+    margin:auto;
+    width:768px;
+}
+input[type="button"],select{
+    background:var(--c1);border:none;
+}
+input,select,textarea{
+    background:var(--c0);outline:none;border:none;
+}
+input[type="button"]:hover{
+    background:var(--c0);
+}
+input[type="button"]:active{
+    background:var(--c1);
+}
+input[type="number"]{
+    width:4em;
+}
+div{
+    padding:0.25em;
+}
+canvas{
+    image-rendering:pixelated;
+    cursor:crosshair;
+}
