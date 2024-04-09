@@ -9,10 +9,9 @@
 <body>
     ハケイラー :ちょっとした波形が作れます。ver 0.2.0 | neodym65
     <span style="float:right;">
-    <input type='button'value='Load'onclick='filein("nhd",0)'>
-    <input type='button'value='Save'onclick='fileout((hname.value==""?"noname":hname.value)+".nhd",makeNHD(nhd))'>
-    <input type='button'value='Layor'onclick='filein("nhd",1)'>
-    <input type='button'value='WAV'onclick='fileout((hname.value==""?"noname":hname.value)+".wav",nhd2WAV(nhd))'>
+    <input type='button'value='Load'onclick='filein("nhd",0)'title='NHDファイルの読込'>
+    <input type='button'value='Save'onclick='fileout((hname.value==""?"noname":hname.value)+".nhd",makeNHD(nhd))'title='NHDファイルの書出'>
+    <input type='button'value='Layor'onclick='filein("nhd",1)'title='比較用NHDの読込'>
     </span>
     <div onchange="toJS()">
     name:<input type="text"placeholder="半角英数記号のみ"onchange="this.value=this.value.replace(/[^ -~]/g,'')"id="hname"value="SampleWave">
@@ -24,6 +23,16 @@
         <div id="hadd"></div>
     </div>
     <div id="roll"></div>
+    <div onchange="toWAV()">WAV Option <input type="button"value="Preview"onclick="preview()">
+        <input type='button'value='Export'onclick='fileout((hname.value==""?"noname":hname.value)+".wav",exWAV())'><br>
+        Rate:<select id="hrate"></select> 
+        Ch:<select id="hch"></select> 
+        Bit:<select id="hbit"></select> | 
+        Vol:<input type="number" id="hvol" value="50"> 
+        Key:<input type="number" id="hkey" value="60"> 
+        Sec:<input type="number" id="hsec" value="5"> | 
+        長さ調整:<select id="htail"></select>
+    </div>
 </body>
 <script src='./nhd.js'></script>
 <style>
