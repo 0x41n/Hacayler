@@ -32,8 +32,6 @@ nhd	Hacayler Data
 	2 Pulse - パルス波
 		A DutyH (0-15、0だとDuty比が時間で変化する音になる)
 		B DutyL (1-256)
-	E nTone - PixToneもどき このモードだけデータの入り方が特殊。
-		後述。
 	F Noise - ノイズ
 		A タイプ
 		B ぱらめ (タイプによって意味が変わる)
